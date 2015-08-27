@@ -50,7 +50,7 @@ $app->get(
     }
 );
 
-// POST route
+// POST route rerister
 $app->post(
     '/register',
     function () {
@@ -58,7 +58,7 @@ $app->post(
         $u = new User();
         $conn = $u->connect();
 
-        //cehck if some post aprams are missing
+        //cehck if some post params are missing
         if(empty($_POST['first_name']) 
             || empty($_POST['last_name']) 
             || empty($_POST['date_of_birth'])
@@ -96,19 +96,35 @@ $app->post(
         if(strlen($password) < 6) returnError('Password must be longer then five characters.');
         if($u->checkUser($conn, $username)) returnError('Username alredy exists in database, chose anather');
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) returnError('Email is not valid.');
-        
-        $first_name = trim($first_name);
-        $last_name = trim($last_name);
-        $date_of_birth = strtotime($date_of_birth);
-        $username = trim($username);
-        $password = hash('sha256', $password);
 
         //whriteing data in database
         $u->createUser($conn, $first_name, $last_name, $date_of_birth, $country,$ip , $username, $password, $email);
         //success message
         SuccessMessage($username);
-
     }
+);
+
+//POST ROUTE LOGIN
+$app->post(
+    '/login',
+    function () {
+        
+        //check if some parrams are missing
+        if(empty($_POST['username']) || empty($_POST['password'])){
+            returnError('Missing or empty post parameters.');
+        }
+
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+
+        if(!ctype_alpha($username)) returnError('All username chars must be english letters.');
+        if(preg_match('/\s/',$password)) returnError('Password can`t contain any whitespaces.');
+        if(strlen($password) < 6) returnError('Password must be longer then five characters.');
+        
+        $u = new User();
+        $conn = $u->connect();
+        $u->loginUser($conn, $username, $password);
+    }   
 );
 
 // PUT route

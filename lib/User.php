@@ -27,6 +27,12 @@
         */
         public function createUser($conn, $first_name, $last_name, $date_of_birth, $country,$ip , $username, $password, $email)
         {
+            $first_name = trim($first_name);
+            $last_name = trim($last_name);
+            $date_of_birth = strtotime($date_of_birth);
+            $username = trim($username);
+            $password = hash('sha256', $password);
+
             $stmt = $conn->prepare("INSERT INTO registrants (first_name, last_name, date_of_birth, country, ip, username, password, email) VALUES (:first_name,:last_name,:date_of_birth,:country,:ip,:username,:password,:email)");
             
             $stmt->bindValue(':first_name',$first_name, PDO::PARAM_STR);
@@ -43,9 +49,29 @@
         /*
         method for login
         */
-        public function loginUser()
+        public function loginUser($conn, $username, $password)
         {
-            //body
+            $password = hash('sha256', $password);
+            $username = trim($username);
+            $stmt = $conn->prepare("select * from registrants where username = :username and password = :password");
+            $stmt->bindValue(':username',$username, PDO::PARAM_STR);
+            $stmt->bindValue(':password',$password, PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetchObject();
+            if($result){
+                //method for token in functions
+                $token = token(8);
+                //adding token to database  INSERT INTO REGISTRY (name, value) VALUES (:name, :value)
+                $stmt = $conn->prepare("update registrants set token = :token where username = :username");
+                $stmt->bindValue(':token', $token, PDO::PARAM_STR);
+                $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+                $stmt->execute();
+                //method for pass asterisk in functions ********
+                $asterisk = passAsterisk();
+                successLogin($username, $token, $asterisk);
+            }else{
+                returnError('Password or username doesn`t exist.');
+            }
         }
         /*
         method for deliting

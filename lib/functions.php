@@ -35,7 +35,8 @@ function CheckUserYears($date_of_birth = '')
 }
 
 //success message
-function SuccessMessage($username = ''){
+function SuccessMessage($username = '')
+{
 	$successArray = array(
 		'error'        => false,
 		'username'     => $username,
@@ -48,4 +49,37 @@ function SuccessMessage($username = ''){
 	exit();
 }
 
-//checking country
+
+//generate token function
+function token($length)
+{
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789';
+   	return substr(str_shuffle($characters), 0, $length);
+}
+
+//overvriteing password
+function passAsterisk(){
+	$asterisk = array();
+	for($i=0; $i < strlen($_POST['password']); $i++){
+		$asterisk[] = '*';
+	}
+	 $asterisk = implode('',$asterisk);
+	return $asterisk;
+}
+
+//successlogin
+function successLogin($username = '', $token = '', $asterisk = '')
+{
+	$loginArray = array(
+		'error'        => false,
+		'message_date' => date('m/d/Y H:i:s'),
+		'username'     => $username,
+		'password'     => $asterisk,
+		'ip'           => $_SERVER['REMOTE_ADDR'],
+		'token'        => $token
+		);
+	$encodedJSN = json_encode($loginArray);
+	header('Content-Type: application/json; charset=utf-8');
+	echo $encodedJSN;
+	exit();
+}
