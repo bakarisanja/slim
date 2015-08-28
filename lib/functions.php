@@ -83,3 +83,17 @@ function successLogin($username = '', $token = '', $asterisk = '')
 	echo $encodedJSN;
 	exit();
 }
+//error":false, "username", and one more key "status" with string "deleted"
+function successRemove($username)
+{
+	$removeArray = array(
+		'error'        => false,
+		'message_date' => date('m/d/Y H:i:s'),
+		'username'     => $username,
+		'status'       => 'deleted'
+		);
+	$encodedJSN = json_encode($removeArray);
+	header('Content-Type: application/json; charset=utf-8');
+	echo $encodedJSN;
+	exit();
+}

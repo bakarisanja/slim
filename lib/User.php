@@ -8,6 +8,7 @@
         public function connect(){
             return $conn = new PDO('mysql:host='. DB_HOST .';dbname='. DB_NAME, DB_USER, DB_PASS);
         }
+        
         /*
         method for checking if user alredy exists in database
         */
@@ -22,6 +23,7 @@
                 return false;
             }
         }
+
         /*
         method for creating a new user
         */
@@ -46,6 +48,7 @@
 
             $stmt->execute();
         }
+
         /*
         method for login
         */
@@ -68,16 +71,29 @@
                 $stmt->execute();
                 //method for pass asterisk in functions ********
                 $asterisk = passAsterisk();
+                //success Login message from functions
                 successLogin($username, $token, $asterisk);
             }else{
                 returnError('Password or username doesn`t exist.');
             }
         }
+
         /*
-        method for deliting
+        remove user (dodacu i id korisnika da bi iz CI radio ovu akciju i brisao po id-u)
         */
-        public function deleteUser()
+        public function removeUser($conn, $username, $password, $token)
         {
-            //body
+            
+            $stmt = $conn->prepare("select * from registrants where username = :username and password = :password and token = :token");
+            $stmt->bindValue(':username', $username, PDO::PARAM_STR);
+            $stmt->bindValue(':password', $password, PDO::PARAM_STR);
+            $stmt->bindValue(':token', 'cgLesJwz', PDO::PARAM_STR);
+            $stmt->execute();
+            $result = $stmt->fetchObject();
+            if($result){
+                successRemove($username);
+            }else{
+                returnError('Password or username or token doesn`t match');
+            }
         }
     }

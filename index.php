@@ -34,21 +34,12 @@ $app = new \Slim\Slim();
  * is an anonymous function.
  */
 
-// GET route
-$app->get(
-    '/',
-    function () {
+//Modifing of 404
 
-    }
-);
-
-// GET rerister/ registration form
-$app->get(
-    '/register',
-    function() {
-
-    }
-);
+$app->notFound(function () use($app) {
+    echo 'unavilable';
+    die();
+});
 
 // POST route rerister
 $app->post(
@@ -127,24 +118,22 @@ $app->post(
     }   
 );
 
-// PUT route
-$app->put(
-    '/put',
+//POST ROUTE REMOVE
+$app->post(
+    '/remove',
     function () {
-        echo 'This is a PUT route';
-    }
-);
+        //check if some parrams are missing
+        if(empty($_POST['username']) || empty($_POST['password'] || empty($_POST['token']))){
+            returnError('Missing or empty post parameters.');
+        }
 
-// PATCH route
-$app->patch('/patch', function () {
-    echo 'This is a PATCH route';
-});
-
-// DELETE route
-$app->delete(
-    '/delete',
-    function () {
-        echo 'This is a DELETE route';
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        $token = $_POST['token'];
+        
+        $u = new User();
+        $conn = $u->connect();
+        $u->removeUser($conn, $username, $password, $token);
     }
 );
 

@@ -1,9 +1,1 @@
-1 made dbconf.php file, where i put constants for database conection
-2 made file User.php, it is class witch is hendling user
-3 made method create user
 
-pre unosa u bazu srediti podatke npr. veliko slovo i to
-
-dodao jos promena datuma, ako nije validan, npr 34. februar
-
-proveriti putanje zbog premestanja lib foldera
