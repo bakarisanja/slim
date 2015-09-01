@@ -1,39 +1,11 @@
 <?php
-/**
- * Step 1: Require the Slim Framework
- *
- * If you are not using Composer, you need to require the
- * Slim Framework and register its PSR-0 autoloader.
- *
- * If you are using Composer, you can skip this step.
- */
+define('APPATH', realpath(dirname(__FILE__)) . DIRECTORY_SEPARATOR);
 require 'Slim/Slim.php';
 include_once 'lib/functions.php';
-/*
-require user
-*/
-require_once 'lib/User.php';
+include_once 'lib/User.php';
 \Slim\Slim::registerAutoloader();
 
-/**
- * Step 2: Instantiate a Slim application
- *
- * This example instantiates a Slim application using
- * its default settings. However, you will usually configure
- * your Slim application now by passing an associative array
- * of setting names and values into the application constructor.
- */
 $app = new \Slim\Slim();
-
-/**
- * Step 3: Define the Slim application routes
- *
- * Here we define several Slim application routes that respond
- * to appropriate HTTP request methods. In this example, the second
- * argument for `Slim::get`, `Slim::post`, `Slim::put`, `Slim::patch`, and `Slim::delete`
- * is an anonymous function.
- */
-
 //Modifing of 404
 
 $app->notFound(function () use($app) {
@@ -47,7 +19,6 @@ $app->post(
     function () {
         //db for later check of existing username
         $u = new User();
-        $conn = $u->connect();
 
         //cehck if some post params are missing
         if(empty($_POST['first_name']) 
@@ -85,11 +56,11 @@ $app->post(
         if(!ctype_alpha($username)) returnError('All username chars must be english letters.');
         if(preg_match('/\s/',$password)) returnError('Password can`t contain any whitespaces.');
         if(strlen($password) < 6) returnError('Password must be longer then five characters.');
-        if($u->checkUser($conn, $username)) returnError('Username alredy exists in database, chose anather');
+        if($u->checkUser($username)) returnError('Username alredy exists in database, chose anather');
         if(!filter_var($email, FILTER_VALIDATE_EMAIL)) returnError('Email is not valid.');
 
         //whriteing data in database
-        $u->createUser($conn, $first_name, $last_name, $date_of_birth, $country,$ip , $username, $password, $email);
+        $u->createUser($first_name, $last_name, $date_of_birth, $country,$ip , $username, $password, $email);
         //success message
         SuccessMessage($username);
     }
@@ -99,7 +70,6 @@ $app->post(
 $app->post(
     '/login',
     function () {
-        
         //check if some parrams are missing
         if(empty($_POST['username']) || empty($_POST['password'])){
             returnError('Missing or empty post parameters.');
@@ -113,8 +83,7 @@ $app->post(
         if(strlen($password) < 6) returnError('Password must be longer then five characters.');
         
         $u = new User();
-        $conn = $u->connect();
-        $u->loginUser($conn, $username, $password);
+        $u->loginUser($username, $password);
     }   
 );
 
@@ -132,15 +101,8 @@ $app->post(
         $token = $_POST['token'];
         
         $u = new User();
-        $conn = $u->connect();
-        $u->removeUser($conn, $username, $password, $token);
+        $test = $u->removeUser($username,$password,$token);
     }
 );
 
-/**
- * Step 4: Run the Slim application
- *
- * This method should be called last. This executes the Slim application
- * and returns the HTTP response to the HTTP client.
- */
 $app->run();
