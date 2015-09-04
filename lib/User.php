@@ -87,6 +87,9 @@ Class User
      */
 	public function removeUser($username, $password, $token)
 	{
+		$password = hash('sha256', $password);
+        $username = trim($username);
+		
 		$query = "select * from registrants where username = '$username' and password = '$password' and token = '$token'";
         $result = $this->db->fetchOne($query);
         if($result){
