@@ -4,7 +4,7 @@ require 'Slim/Slim.php';
 include_once 'lib/functions.php';
 include_once 'lib/User.php';
 \Slim\Slim::registerAutoloader();
-
+//git from mi
 $app = new \Slim\Slim();
 //Modifing of 404
 
